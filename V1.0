@@ -1,0 +1,35 @@
+import { useState } from 'react';
+import HomeForm from './components/HomeForm';
+import ProgramResults from './components/ProgramResults';
+import { generateProgram, type UserInput, type FitnessProgram } from './lib/programGenerator';
+
+export default function App() {
+  const [view, setView] = useState<'home' | 'results'>('home');
+  const [program, setProgram] = useState<FitnessProgram | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleGenerateProgram = async (input: UserInput) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      const generatedProgram = generateProgram(input);
+      setProgram(generatedProgram);
+      setView('results');
+      setIsLoading(false);
+    }, 1000);
+  };
+
+  const handleBack = () => {
+    setView('home');
+    setProgram(null);
+  };
+
+  return (
+    <>
+      {view === 'home' ? (
+        <HomeForm onSubmit={handleGenerateProgram} isLoading={isLoading} />
+      ) : program ? (
+        <ProgramResults program={program} onBack={handleBack} />
+      ) : null}
+    </>
+  );
+}
